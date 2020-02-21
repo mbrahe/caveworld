@@ -4,24 +4,12 @@ using UnityEngine;
 
 public class FootController : MonoBehaviour
 {
-    public HeadController head;
-    public float stepRadius = 2;
-    public int raycastFineness = 4;
+    public bool isStepping;
+    float speed;
+    Vector2 target;
+    Vector2 origin;
 
-    public void Step(Vector2 direction)
-    {
-        Vector2 target = direction.normalized * stepRadius * head.gameObject.GetComponent<Rigidbody2D>().velocity.magnitude;
-        Vector2 origin = target + Vector2.up * .5f;
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.down, 10);
-        Debug.Log(hit.collider);
-
-        if (hit.collider != null && Mathf.Abs(Vector2.Dot(hit.normal.normalized, Vector2.up)) > .6)
-        {
-            Vector3 newPos = new Vector3(hit.point.x, hit.point.y, transform.position.z);
-            transform.position = newPos;
-        }
-
-    }
+    float t;
 
     // Start is called before the first frame update
     void Start()
@@ -29,9 +17,33 @@ public class FootController : MonoBehaviour
         
     }
 
+    public void Step(Vector2 destination, float stepSpeed)
+    {
+        if (!isStepping)
+        {
+            isStepping = true;
+        }
+        origin = (Vector2) transform.position;
+        target = destination;
+        speed = stepSpeed;
+
+        t = 0;
+
+    }
+
     // Update is called once per frame
     void Update()
     {
-        
+        if (isStepping)
+        {
+            t += speed * Time.deltaTime;
+            transform.position = Vector2.Lerp(origin, target, t);
+        }
+
+        if (t >= 1)
+        {
+            transform.position = (Vector3)target;
+            isStepping = false;
+        }
     }
 }
