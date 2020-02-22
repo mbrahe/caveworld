@@ -4,10 +4,22 @@ using UnityEngine;
 
 public class FootController : MonoBehaviour
 {
+    public float stepCoolDown = .2f;
     public bool isStepping;
+
     float speed;
     Vector2 target;
     Vector2 origin;
+
+    float timer;
+
+    public bool canMove
+    {
+        get
+        {
+            return !isStepping && (timer <= 0);
+        }
+    }
 
     float t;
 
@@ -44,6 +56,13 @@ public class FootController : MonoBehaviour
         {
             transform.position = (Vector3)target;
             isStepping = false;
+            timer = stepCoolDown;
+            t = 0;
+        }
+
+        if (timer >= 0)
+        {
+            timer -= Time.deltaTime;
         }
     }
 }
